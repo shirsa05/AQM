@@ -1,0 +1,21 @@
+name: aqm-db
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.12
+  - redis-py
+  - hiredis
+  - asyncpg
+  - psycopg
+  - pytest
+  - pytest-asyncio
+  - docker-py
+  - pydantic
+  - uvicorn
+  - fastapi
+  - alembic
+  - pip
+  - pip:
+    - sqlalchemy[asyncio]
+    - fakeredis
