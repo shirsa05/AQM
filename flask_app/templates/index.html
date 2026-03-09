@@ -1,0 +1,1704 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AQM — {{ user_id | upper }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;600&display=swap"
+    rel="stylesheet" />
+  <style>
+    /* ── CSS Variables ─────────────────────────────────────────── */
+    :root {
+      --bg-void: #efeae2;
+      /* WhatsApp chat background */
+      --bg-panel: #ffffff;
+      /* panels */
+      --bg-surface: #f0f2f5;
+      /* message area */
+      --bg-elevated: #ffffff;
+      --bg-hover: #f5f6f6;
+
+      --border: #e1e4e8;
+      --border-bright: #d1d7db;
+
+      --text-primary: #111b21;
+      --text-dim: #667781;
+      --text-muted: #8696a0;
+
+      --accent-teal: #25d366;
+      --accent-blue: #128c7e;
+      --accent-glow: rgba(37, 211, 102, 0.15);
+
+      --gold: #ffd700;
+      --gold-dim: #8a7200;
+      --gold-glow: rgba(255, 215, 0, 0.12);
+
+      --silver: #b8d4e8;
+      --silver-dim: #4a6a80;
+      --silver-glow: rgba(184, 212, 232, 0.1);
+
+      --bronze: #cd7f32;
+      --bronze-dim: #6a4010;
+      --bronze-glow: rgba(205, 127, 50, 0.12);
+
+      --danger: #ff4444;
+      --success: #00e676;
+      --warn: #ffaa00;
+
+      --font-mono: "JetBrains Mono", "Share Tech Mono", monospace;
+      --font-ui: "Rajdhani", sans-serif;
+
+      --radius: 4px;
+      --panel-gap: 12px;
+    }
+
+    /* ── Reset ─────────────────────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      background: var(--bg-void);
+      color: var(--text-primary);
+      font-family: var(--font-ui);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ── Layout ─────────────────────────────────────────────────── */
+    .layout {
+      display: grid;
+      grid-template-rows: 48px 1fr;
+      grid-template-columns: 280px 1fr 300px;
+      grid-template-areas:
+        "topbar topbar topbar"
+        "contacts chat vault";
+      height: 100vh;
+      gap: var(--panel-gap);
+      padding: var(--panel-gap);
+    }
+
+    /* ── Topbar ─────────────────────────────────────────────────── */
+    .topbar {
+      background: #008069;
+      color: white;
+      grid-area: topbar;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .topbar::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg,
+          transparent,
+          var(--accent-teal),
+          transparent);
+      opacity: 0.6;
+    }
+
+    .topbar-logo {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      color: #008069;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .topbar-logo .dot {
+      background: #25d366;
+      box-shadow: 0 0 6px #25d366;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.4;
+        transform: scale(0.8);
+      }
+    }
+
+    .topbar-identity {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .identity-badge {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      padding: 3px 10px;
+      border-radius: 2px;
+      text-transform: uppercase;
+    }
+
+    .identity-badge.alice {
+      background: rgba(0, 153, 255, 0.15);
+      border: 1px solid rgba(0, 153, 255, 0.4);
+      color: #66bbff;
+    }
+
+    .identity-badge.bob {
+      background: rgba(0, 230, 118, 0.12);
+      border: 1px solid rgba(0, 230, 118, 0.35);
+      color: #44dd88;
+    }
+
+    .topbar-coins {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .coin-count {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 2px;
+      border: 1px solid;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .coin-count.gold {
+      color: var(--gold);
+      border-color: var(--gold-dim);
+      background: var(--gold-glow);
+    }
+
+    .coin-count.silver {
+      color: var(--silver);
+      border-color: var(--silver-dim);
+      background: var(--silver-glow);
+    }
+
+    .coin-count.bronze {
+      color: var(--bronze);
+      border-color: var(--bronze-dim);
+      background: var(--bronze-glow);
+    }
+
+    .coin-count .val {
+      font-size: 14px;
+    }
+
+    .topbar-status {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      margin-right: 5px;
+      background: var(--success);
+      box-shadow: 0 0 6px var(--success);
+    }
+
+    /* ── Panel base ─────────────────────────────────────────────── */
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-surface);
+      flex-shrink: 0;
+    }
+
+    .panel-header-title {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .panel-header-badge {
+      margin-left: auto;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: var(--accent-teal);
+      opacity: 0.7;
+    }
+
+    /* ── Contacts panel ─────────────────────────────────────────── */
+    .contacts-panel {
+      grid-area: contacts;
+    }
+
+    .contacts-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+    }
+
+    .contact-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contact-card:hover {
+      border-color: var(--border-bright);
+      background: var(--bg-elevated);
+    }
+
+    .contact-card.active {
+      border-color: var(--accent-teal);
+      background: rgba(0, 212, 200, 0.05);
+    }
+
+    .contact-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+    }
+
+    .contact-card.priority-BESTIE::before {
+      background: var(--gold);
+      box-shadow: 0 0 8px var(--gold);
+    }
+
+    .contact-card.priority-MATE::before {
+      background: var(--silver);
+      box-shadow: 0 0 8px var(--silver);
+    }
+
+    .contact-card.priority-STRANGER::before {
+      background: var(--bronze);
+    }
+
+    .contact-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .contact-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .priority-badge {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      padding: 2px 6px;
+      border-radius: 2px;
+      text-transform: uppercase;
+    }
+
+    .priority-badge.BESTIE {
+      color: var(--gold);
+      background: var(--gold-glow);
+      border: 1px solid var(--gold-dim);
+    }
+
+    .priority-badge.MATE {
+      color: var(--silver);
+      background: var(--silver-glow);
+      border: 1px solid var(--silver-dim);
+    }
+
+    .priority-badge.STRANGER {
+      color: var(--bronze);
+      background: var(--bronze-glow);
+      border: 1px solid var(--bronze-dim);
+    }
+
+    .contact-stats {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-dim);
+    }
+
+    .contact-coins {
+      display: flex;
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    .mini-coin {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 2px;
+      border: 1px solid;
+    }
+
+    .mini-coin.g {
+      color: var(--gold);
+      border-color: var(--gold-dim);
+      background: var(--gold-glow);
+    }
+
+    .mini-coin.s {
+      color: var(--silver);
+      border-color: var(--silver-dim);
+      background: var(--silver-glow);
+    }
+
+    .mini-coin.b {
+      color: var(--bronze);
+      border-color: var(--bronze-dim);
+      background: var(--bronze-glow);
+    }
+
+    .promo-indicator {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: var(--accent-teal);
+      letter-spacing: 1px;
+    }
+
+    /* Thresholds progress */
+    .threshold-bar {
+      margin-top: 8px;
+    }
+
+    .threshold-label {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .bar-track {
+      height: 3px;
+      background: var(--bg-elevated);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 3px;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.5s ease;
+    }
+
+    .bar-fill.bestie {
+      background: var(--gold);
+    }
+
+    .bar-fill.mate {
+      background: var(--silver);
+    }
+
+    /* ── Chat panel ─────────────────────────────────────────────── */
+    .chat-panel {
+      grid-area: chat;
+    }
+
+    .messages-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      scroll-behavior: smooth;
+      background-size: 300px;
+    }
+
+    /* Custom scrollbar */
+    .messages-container::-webkit-scrollbar,
+    .contacts-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .messages-container::-webkit-scrollbar-track,
+    .contacts-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .messages-container::-webkit-scrollbar-thumb,
+    .contacts-list::-webkit-scrollbar-thumb {
+      background: var(--border-bright);
+      border-radius: 2px;
+    }
+
+    .message-row {
+      display: flex;
+      flex-direction: column;
+      max-width: 72%;
+      animation: msgIn 0.25s ease-out;
+    }
+
+    @keyframes msgIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message-row.outgoing {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+
+    .message-row.incoming {
+      align-self: flex-start;
+      align-items: flex-start;
+    }
+
+    .message-bubble {
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      border: 1px solid;
+      position: relative;
+      line-height: 1.5;
+      font-size: 14px;
+      word-break: break-word;
+    }
+
+    .message-row.outgoing .message-bubble {
+      background: #d9fdd3;
+      border-color: #d9fdd3;
+      color: #111b21;
+    }
+
+    .message-row.incoming .message-bubble {
+      background: #ffffff;
+      border-color: #e1e4e8;
+      color: #111b21;
+    }
+
+    .message-tier-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      border-radius: var(--radius) 0 0 var(--radius);
+    }
+
+    .message-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      padding: 0 2px;
+    }
+
+    .msg-sender {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .msg-tier-badge {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      padding: 1px 5px;
+      border-radius: 2px;
+      border: 1px solid;
+    }
+
+    .msg-tier-badge.GOLD {
+      color: var(--gold);
+      border-color: var(--gold-dim);
+      background: var(--gold-glow);
+    }
+
+    .msg-tier-badge.SILVER {
+      color: var(--silver);
+      border-color: var(--silver-dim);
+      background: var(--silver-glow);
+    }
+
+    .msg-tier-badge.BRONZE {
+      color: var(--bronze);
+      border-color: var(--bronze-dim);
+      background: var(--bronze-glow);
+    }
+
+    .msg-time {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-muted);
+    }
+
+    .msg-rekey {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: var(--accent-teal);
+      letter-spacing: 1px;
+      opacity: 0.8;
+    }
+
+    .msg-ctx {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: var(--text-muted);
+    }
+
+    .msg-ratchet {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: var(--text-muted);
+    }
+
+    /* System messages */
+    .system-message {
+      align-self: center;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      padding: 4px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--bg-surface);
+    }
+
+    /* Input area */
+    .chat-input-area {
+      padding: 12px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-surface);
+      flex-shrink: 0;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+
+    .chat-textarea {
+      flex: 1;
+      background: var(--bg-void);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      padding: 10px 12px;
+      resize: none;
+      min-height: 40px;
+      max-height: 120px;
+      outline: none;
+      transition: border-color 0.2s;
+      line-height: 1.5;
+    }
+
+    .chat-textarea:focus {
+      border-color: var(--accent-teal);
+      box-shadow: 0 0 0 1px rgba(0, 212, 200, 0.15);
+    }
+
+    .chat-textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    .send-btn {
+      background: #25d366;
+      border: none;
+      color: white;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      padding: 10px 18px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      height: 40px;
+      white-space: nowrap;
+    }
+
+    .send-btn:hover {
+      background: #1ebe5d;
+      box-shadow: 0 0 12px rgba(0, 212, 200, 0.2);
+    }
+
+    .send-btn:active {
+      transform: scale(0.97);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .input-hint {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      letter-spacing: 1px;
+    }
+
+    /* ── Vault / Status panel ───────────────────────────────────── */
+    .vault-panel {
+      grid-area: vault;
+    }
+
+    .vault-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .stat-section {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+    }
+
+    .stat-section-title {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-section-title::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(26, 48, 80, 0.5);
+    }
+
+    .stat-row:last-child {
+      border-bottom: none;
+    }
+
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+    }
+
+    .stat-value {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .stat-value.gold {
+      color: var(--gold);
+    }
+
+    .stat-value.silver {
+      color: var(--silver);
+    }
+
+    .stat-value.bronze {
+      color: var(--bronze);
+    }
+
+    .stat-value.burned {
+      color: var(--danger);
+    }
+
+    .stat-value.good {
+      color: var(--success);
+    }
+
+    .stat-value.dim {
+      color: var(--text-dim);
+    }
+
+    /* Big coin display */
+    .coin-display {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .coin-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 6px;
+      border-radius: var(--radius);
+      border: 1px solid;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .coin-block::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.06;
+    }
+
+    .coin-block.gold {
+      border-color: var(--gold-dim);
+      background: var(--gold-glow);
+    }
+
+    .coin-block.silver {
+      border-color: var(--silver-dim);
+      background: var(--silver-glow);
+    }
+
+    .coin-block.bronze {
+      border-color: var(--bronze-dim);
+      background: var(--bronze-glow);
+    }
+
+    .coin-block-label {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .coin-block.gold .coin-block-label {
+      color: var(--gold);
+    }
+
+    .coin-block.silver .coin-block-label {
+      color: var(--silver);
+    }
+
+    .coin-block.bronze .coin-block-label {
+      color: var(--bronze);
+    }
+
+    .coin-block-count {
+      font-family: var(--font-mono);
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1;
+      transition: all 0.3s;
+    }
+
+    .coin-block.gold .coin-block-count {
+      color: var(--gold);
+    }
+
+    .coin-block.silver .coin-block-count {
+      color: var(--silver);
+    }
+
+    .coin-block.bronze .coin-block-count {
+      color: var(--bronze);
+    }
+
+    .coin-block-cap {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Burn counter */
+    .burn-counter {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      background: rgba(255, 68, 68, 0.05);
+      border: 1px solid rgba(255, 68, 68, 0.15);
+      border-radius: var(--radius);
+    }
+
+    .burn-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: rgba(255, 68, 68, 0.6);
+    }
+
+    .burn-value {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--danger);
+    }
+
+    /* Ratchet state */
+    .ratchet-display {
+      padding: 8px 10px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .ratchet-label {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .ratchet-bar-track {
+      height: 4px;
+      background: var(--bg-void);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+
+    .ratchet-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: linear-gradient(90deg,
+          var(--accent-teal),
+          var(--accent-blue));
+      transition: width 0.4s ease;
+    }
+
+    .ratchet-meta {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: var(--text-muted);
+    }
+
+    /* Device context display */
+    .device-ctx {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 4px;
+    }
+
+    .ctx-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 6px 4px;
+      background: var(--bg-elevated);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    .ctx-icon {
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    .ctx-val {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-dim);
+      text-align: center;
+    }
+
+    /* Tier next prediction */
+    .tier-prediction {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .tier-pred-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      flex: 1;
+    }
+
+    .tier-pred-value {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      padding: 2px 8px;
+      border-radius: 2px;
+      border: 1px solid;
+    }
+
+    /* Empty state */
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      opacity: 0.4;
+    }
+
+    .empty-icon {
+      font-size: 32px;
+      opacity: 0.5;
+    }
+
+    .empty-text {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* Toast notifications */
+    .toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 1000;
+    }
+
+    .toast {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius);
+      padding: 8px 14px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-primary);
+      letter-spacing: 1px;
+      animation:
+        toastIn 0.2s ease,
+        toastOut 0.3s ease 2.7s forwards;
+      max-width: 280px;
+    }
+
+    .toast.tier-GOLD {
+      border-color: var(--gold-dim);
+      color: var(--gold);
+    }
+
+    .toast.tier-SILVER {
+      border-color: var(--silver-dim);
+      color: var(--silver);
+    }
+
+    .toast.tier-BRONZE {
+      border-color: var(--bronze-dim);
+      color: var(--bronze);
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @keyframes toastOut {
+      from {
+        opacity: 1;
+      }
+
+      to {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+    }
+
+    /* Flash animation on number change */
+    @keyframes numFlash {
+      0% {
+        transform: scale(1.3);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .flash {
+      animation: numFlash 0.3s ease-out;
+    }
+
+    /* Connection status bar */
+    .conn-status {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 1px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      border: 1px solid;
+    }
+
+    .conn-status.connected {
+      color: var(--success);
+      border-color: rgba(0, 230, 118, 0.3);
+      background: rgba(0, 230, 118, 0.08);
+    }
+
+    .conn-status.disconnected {
+      color: var(--danger);
+      border-color: rgba(255, 68, 68, 0.3);
+      background: rgba(255, 68, 68, 0.08);
+    }
+
+    .conn-status.connecting {
+      color: var(--warn);
+      border-color: rgba(255, 170, 0, 0.3);
+      background: rgba(255, 170, 0, 0.08);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+    <!-- ── Topbar ─────────────────────────────────────────────── -->
+    <header class="topbar">
+      <div class="topbar-logo">
+        <span class="dot"></span>
+        AQM
+      </div>
+      <div class="topbar-identity">
+        <div class="identity-badge {{ user_id }}">{{ user_id }}</div>
+        <span style="
+              color: var(--text-muted);
+              font-family: var(--font-mono);
+              font-size: 10px;
+            ">↔</span>
+        <div class="identity-badge {{ partner_id }}">{{ partner_id }}</div>
+      </div>
+      <span id="conn-status" class="conn-status connecting">CONNECTING</span>
+      <div class="topbar-coins">
+        <span style="
+              font-size: 10px;
+              color: var(--text-muted);
+              letter-spacing: 1px;
+              margin-right: 4px;
+            ">INV</span>
+        <div class="coin-count gold">
+          <span>G</span><span class="val" id="top-gold">—</span>
+        </div>
+        <div class="coin-count silver">
+          <span>S</span><span class="val" id="top-silver">—</span>
+        </div>
+        <div class="coin-count bronze">
+          <span>B</span><span class="val" id="top-bronze">—</span>
+        </div>
+      </div>
+      <div class="topbar-status">
+        <span class="status-dot"></span>
+        POST-QUANTUM SECURE
+      </div>
+    </header>
+
+    <!-- ── Contacts panel ──────────────────────────────────────── -->
+    <aside class="panel contacts-panel">
+      <div class="panel-header">
+        <span class="panel-header-title">Contacts</span>
+        <span class="panel-header-badge" id="contacts-count">0 PEERS</span>
+      </div>
+      <div class="contacts-list" id="contacts-list">
+        <div class="empty-state">
+          <div class="empty-icon">👥</div>
+          <div class="empty-text">NO CONTACTS</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── Chat panel ──────────────────────────────────────────── -->
+    <main class="panel chat-panel">
+      <div class="panel-header">
+        <span class="panel-header-title">Secure Channel</span>
+        <span class="panel-header-badge" id="chat-partner">{{ partner_id | upper }}</span>
+      </div>
+      <div class="messages-container" id="messages"></div>
+      <div class="chat-input-area">
+        <div class="input-row">
+          <textarea class="chat-textarea" id="msg-input" placeholder="Encrypt message..." rows="1"></textarea>
+          <button class="send-btn" id="send-btn" onclick="sendMessage()">
+            SEND
+          </button>
+        </div>
+        <div class="input-hint" id="input-hint">
+          ENTER to send · SHIFT+ENTER for newline
+        </div>
+      </div>
+    </main>
+
+    <!-- ── Vault / Status panel ────────────────────────────────── -->
+    <aside class="panel vault-panel">
+      <div class="panel-header">
+        <span class="panel-header-title">Crypto Status</span>
+        <span class="panel-header-badge">LIVE</span>
+      </div>
+      <div class="vault-body">
+        <!-- Inventory -->
+        <div class="stat-section">
+          <div class="stat-section-title">Inventory</div>
+          <div class="coin-display">
+            <div class="coin-block gold">
+              <div class="coin-block-label">GOLD</div>
+              <div class="coin-block-count" id="inv-gold">—</div>
+              <div class="coin-block-cap">cap 5</div>
+            </div>
+            <div class="coin-block silver">
+              <div class="coin-block-label">SILV</div>
+              <div class="coin-block-count" id="inv-silver">—</div>
+              <div class="coin-block-cap">cap 4</div>
+            </div>
+            <div class="coin-block bronze">
+              <div class="coin-block-label">BRNZ</div>
+              <div class="coin-block-count" id="inv-bronze">—</div>
+              <div class="coin-block-cap">cap 1</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vault -->
+        <div class="stat-section">
+          <div class="stat-section-title">Vault (Private Keys)</div>
+          <div class="stat-row">
+            <span class="stat-label">ACTIVE GOLD</span>
+            <span class="stat-value gold" id="v-gold">—</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">ACTIVE SILVER</span>
+            <span class="stat-value silver" id="v-silver">—</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">ACTIVE BRONZE</span>
+            <span class="stat-value bronze" id="v-bronze">—</span>
+          </div>
+          <div style="margin-top: 8px">
+            <div class="burn-counter">
+              <span class="burn-label">🔥 BURNED</span>
+              <span class="burn-value" id="v-burned">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ratchet state -->
+        <div class="stat-section">
+          <div class="stat-section-title">Session Ratchet</div>
+          <div class="ratchet-display">
+            <div class="ratchet-label">Message counter</div>
+            <div class="ratchet-bar-track">
+              <div class="ratchet-bar-fill" id="ratchet-bar" style="width: 0%"></div>
+            </div>
+            <div class="ratchet-meta">
+              <span id="ratchet-count">0</span>
+              <span id="ratchet-max">/ —</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Device context from last message -->
+        <div class="stat-section">
+          <div class="stat-section-title">Last Device Context</div>
+          <div class="device-ctx">
+            <div class="ctx-item">
+              <div class="ctx-icon">🔋</div>
+              <div class="ctx-val" id="ctx-battery">—</div>
+            </div>
+            <div class="ctx-item">
+              <div class="ctx-icon">📶</div>
+              <div class="ctx-val" id="ctx-signal">—</div>
+            </div>
+            <div class="ctx-item">
+              <div class="ctx-icon" id="ctx-wifi-icon">📡</div>
+              <div class="ctx-val" id="ctx-wifi">—</div>
+            </div>
+          </div>
+          <div style="margin-top:6px;display:flex;flex-direction:column;gap:4px">
+            <div class="tier-prediction">
+              <span class="tier-pred-label">SESSION TIER</span>
+              <span class="tier-pred-value" id="ratchet-tier-display"
+                style="color:var(--text-muted);border-color:var(--border)">—</span>
+            </div>
+            <div class="tier-prediction">
+              <span class="tier-pred-label">NEXT REKEY TIER</span>
+              <span class="tier-pred-value" id="last-tier"
+                style="color:var(--text-muted);border-color:var(--border)">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Toast container -->
+  <div class="toast-container" id="toasts"></div>
+
+  <script>
+    // ── Config ────────────────────────────────────────────────────
+    const USER_ID = "{{ user_id }}";
+    const PARTNER_ID = "{{ partner_id }}";
+    const KNOWN_CONTACTS = {{ known_contacts | tojson }};
+    let activeContact = KNOWN_CONTACTS[0];  // currently selected chat target
+    const TIER_COLORS = { GOLD: "#ffd700", SILVER: "#b8d4e8", BRONZE: "#cd7f32" };
+    const TIER_CSS = { GOLD: "gold", SILVER: "silver", BRONZE: "bronze" };
+    const PRIORITY_ORDER = ["BESTIE", "MATE", "STRANGER"];
+
+    // ── State ─────────────────────────────────────────────────────
+    let lastRatchet = { count: 0, max: 1, tier: null };
+    let lastCtx = null;
+    let prevCounts = { gold: null, silver: null, bronze: null };
+    let sseSource = null;
+
+    // ── SSE connection ────────────────────────────────────────────
+    // ── SSE connection ────────────────────────────────────────────
+    function connectSSE() {
+      if (sseSource) {
+        sseSource.close();
+        sseSource = null;
+      }
+      setConnStatus("connecting");
+      sseSource = new EventSource("/stream");
+
+      sseSource.onopen = () => {
+        setConnStatus("connected");
+        loadHistory(activeContact, true);  // force scroll on fresh connect
+        loadStatus();
+      };
+
+      sseSource.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        if (data.type === "connected") {
+          setConnStatus("connected");
+          loadHistory(activeContact);
+          loadStatus();
+        } else if (data.type === "message") {
+          const msg = data.data;
+          if (msg.sender === activeContact || msg.recipient === activeContact ||
+            msg.sender === USER_ID || msg.recipient === USER_ID) {
+            appendMessage(msg);
+          }
+        } else if (data.type === "status_update") {
+          updateCoins(data.coins);
+          updateVault(data.vault);
+          updateContacts(data.contacts);
+        } else if (data.type === "context_update") {
+          updateDeviceContext(data.ctx);
+        }
+        // ping — ignore
+      };
+
+      sseSource.onerror = () => {
+        setConnStatus("disconnected");
+        if (sseSource) {
+          sseSource.close();
+          sseSource = null;
+        }
+        setTimeout(connectSSE, 3000);
+      };
+    }
+
+    function setConnStatus(state) {
+      const el = document.getElementById("conn-status");
+      el.className = `conn-status ${state}`;
+      el.textContent = state.toUpperCase();
+    }
+
+    // ── Load initial state ────────────────────────────────────────
+    function loadHistory(filterContact = null, forceScroll = false) {
+      fetch("/api/history")
+        .then(r => r.json())
+        .then(d => {
+          const msgs = filterContact
+            ? d.messages.filter(m => m.sender === filterContact || m.recipient === filterContact)
+            : d.messages;
+          const container = document.getElementById("messages");
+
+          // Save scroll position before re-rendering
+          const wasAtBottom = isNearBottom();
+          const prevScrollTop = container.scrollTop;
+
+          container.innerHTML = "";
+          if (msgs.length === 0) {
+            container.innerHTML = `<div class="empty-state"><div class="empty-icon">🔐</div><div class="empty-text">NO MESSAGES YET<br>CHANNEL READY</div></div>`;
+          } else {
+            msgs.forEach(m => appendMessage(m, false));
+            // Only scroll to bottom if user was already there, or forced
+            if (forceScroll || wasAtBottom) {
+              scrollBottom(true);
+            } else {
+              container.scrollTop = prevScrollTop;
+            }
+          }
+        });
+    }
+
+    function loadStatus() {
+      fetch("/api/status")
+        .then(r => r.json())
+        .then(d => {
+          updateCoins(d.coins);
+          updateVault(d.vault);
+          updateContacts(d.contacts);
+          if (d.context) updateDeviceContext(d.context);
+        });
+    }
+
+    // ── Update functions ──────────────────────────────────────────
+    function updateCoins(coins) {
+      if (!coins) return;
+      setVal("top-gold", coins.gold, prevCounts.gold);
+      setVal("top-silver", coins.silver, prevCounts.silver);
+      setVal("top-bronze", coins.bronze, prevCounts.bronze);
+      setVal("inv-gold", coins.gold);
+      setVal("inv-silver", coins.silver);
+      setVal("inv-bronze", coins.bronze);
+      prevCounts = { gold: coins.gold, silver: coins.silver, bronze: coins.bronze };
+    }
+
+    function setVal(id, val, prev) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const display = val ?? "—";
+      el.textContent = display;
+      if (prev !== null && prev !== undefined && prev !== val) {
+        el.classList.remove("flash");
+        void el.offsetWidth;
+        el.classList.add("flash");
+        setTimeout(() => el.classList.remove("flash"), 400);
+      }
+    }
+
+    function updateVault(vault) {
+      if (!vault) return;
+      setVal("v-gold", vault.active_gold);
+      setVal("v-silver", vault.active_silver);
+      setVal("v-bronze", vault.active_bronze);
+      setVal("v-burned", vault.total_burned);
+    }
+
+    function updateContacts(contacts) {
+      if (!contacts) return;
+      const list = document.getElementById("contacts-list");
+      const badge = document.getElementById("contacts-count");
+      badge.textContent = `${contacts.length} PEER${contacts.length !== 1 ? "S" : ""}`;
+
+      if (contacts.length === 0) {
+        list.innerHTML = `<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">NO CONTACTS</div></div>`;
+        return;
+      }
+
+      list.innerHTML = contacts.map(c => {
+        const bestiePct = Math.min(100, (c.msg_count_7d / 5) * 100);
+        const matePct = Math.min(100, (c.msg_count_30d / 4) * 100);
+        const lockedIcon = c.priority_locked ? "🔒" : "";
+        const nextPromo = getNextPromo(c);
+
+        return `
+      <div class="contact-card priority-${c.priority} ${c.contact_id === activeContact ? 'active' : ''}"
+       onclick="selectContact('${c.contact_id}')">
+        <div class="contact-name">${c.display_name} ${lockedIcon}</div>
+        <div class="contact-meta">
+          <span class="priority-badge ${c.priority}">${c.priority}</span>
+          <span class="contact-stats">${c.msg_count_total} msgs</span>
+          ${nextPromo ? `<span class="promo-indicator">↑ ${nextPromo}</span>` : ""}
+        </div>
+        <div class="contact-coins">
+          <span class="mini-coin g">G:${c.coins.gold}</span>
+          <span class="mini-coin s">S:${c.coins.silver}</span>
+          <span class="mini-coin b">B:${c.coins.bronze}</span>
+        </div>
+        ${c.priority === "STRANGER" || c.priority === "MATE" ? `
+        <div class="threshold-bar">
+          ${c.priority === "STRANGER" ? `
+            <div class="threshold-label"><span>MATE</span><span>${c.msg_count_30d}/4 (30d)</span></div>
+            <div class="bar-track"><div class="bar-fill mate" style="width:${matePct}%"></div></div>
+          ` : ""}
+          ${c.priority !== "BESTIE" ? `
+            <div class="threshold-label"><span>BESTIE</span><span>${c.msg_count_7d}/5 (7d)</span></div>
+            <div class="bar-track"><div class="bar-fill bestie" style="width:${bestiePct}%"></div></div>
+          ` : ""}
+        </div>` : ""}
+      </div>`;
+      }).join("");
+    }
+
+    function getNextPromo(c) {
+      if (c.priority === "BESTIE") return null;
+      if (c.priority === "MATE") return c.msg_count_7d >= 4 ? "BESTIE SOON" : null;
+      if (c.priority === "STRANGER") return c.msg_count_30d >= 3 ? "MATE SOON" : null;
+      return null;
+    }
+
+    function selectContact(contactId) {
+      activeContact = contactId;
+      // Update active highlight on cards
+      document.querySelectorAll(".contact-card").forEach(el => {
+        el.classList.remove("active");
+      });
+      event.currentTarget.classList.add("active");
+      // Update chat header
+      document.getElementById("chat-partner").textContent = contactId.toUpperCase();
+      // Filter messages to show only this conversation
+      loadHistory(contactId, true);
+    }
+
+    function updateRatchet(msg) {
+      if (!msg || !msg.msg_count) return;
+      const count = msg.msg_count;
+      const max = msg.max_msgs || 1;
+      const tier = msg.tier;
+      const pct = Math.min(100, (count / max) * 100);
+
+      document.getElementById("ratchet-bar").style.width = `${pct}%`;
+      document.getElementById("ratchet-count").textContent = count;
+      document.getElementById("ratchet-max").textContent = `/ ${max}`;
+
+      // Update SESSION TIER — the tier currently securing this ratchet
+      const sessionTierEl = document.getElementById("ratchet-tier-display");
+      if (sessionTierEl && tier) {
+        const tc = TIER_CSS[tier];
+        sessionTierEl.textContent = tier;
+        sessionTierEl.style.color = `var(--${tc})`;
+        sessionTierEl.style.borderColor = `var(--${tc}-dim)`;
+        sessionTierEl.style.background = `var(--${tc}-glow)`;
+      }
+    }
+
+    function updateDeviceContext(ctx) {
+      if (!ctx) return;
+      document.getElementById("ctx-battery").textContent = `${ctx.battery}%`;
+      document.getElementById("ctx-signal").textContent = `${ctx.signal}dBm`;
+      document.getElementById("ctx-wifi").textContent = ctx.wifi ? "WiFi" : "Cellular";
+      document.getElementById("ctx-wifi-icon").textContent = ctx.wifi ? "📶" : "📡";
+
+      // Update NEXT REKEY TIER — what tier would be used if rekey happened now
+      const nextTierEl = document.getElementById("last-tier");
+      if (nextTierEl && ctx.tier) {
+        const tc = TIER_CSS[ctx.tier];
+        nextTierEl.textContent = ctx.tier;
+        nextTierEl.style.color = `var(--${tc})`;
+        nextTierEl.style.borderColor = `var(--${tc}-dim)`;
+        nextTierEl.style.background = `var(--${tc}-glow)`;
+      }
+    }
+
+    // ── Message rendering ─────────────────────────────────────────
+    function appendMessage(msg, scroll = true) {
+      const container = document.getElementById("messages");
+
+      // Remove empty state if present
+      const empty = container.querySelector(".empty-state");
+      if (empty) empty.remove();
+
+      const isOut = msg.sender === USER_ID;
+      const tier = msg.tier || "BRONZE";
+      const tierCol = TIER_COLORS[tier] || "#888";
+      const ts = new Date(msg.ts * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+      const row = document.createElement("div");
+      row.className = `message-row ${isOut ? "outgoing" : "incoming"}`;
+
+      const ctx = msg.device_ctx ? `${msg.device_ctx.battery}% · ${msg.device_ctx.wifi ? "WiFi" : "Cell"} · ${msg.device_ctx.signal}dBm` : "";
+
+      row.innerHTML = `
+      <div class="message-bubble">
+        <div class="message-tier-bar" style="background:${tierCol}"></div>
+        <div style="padding-left:8px">${escapeHtml(msg.text)}</div>
+      </div>
+      <div class="message-meta">
+        <span class="msg-sender">${msg.sender}</span>
+        <span class="msg-tier-badge ${tier}">${tier}</span>
+        ${msg.rekey ? `<span class="msg-rekey">⟳ REKEY</span>` : ""}
+        ${msg.msg_count ? `<span class="msg-ratchet">[${msg.msg_count}/${msg.max_msgs}]</span>` : ""}
+        <span class="msg-time">${ts}</span>
+        ${ctx ? `<span class="msg-ctx">${ctx}</span>` : ""}
+      </div>`;
+
+      container.appendChild(row);
+      if (scroll) scrollBottom();
+
+      // Update ratchet display from outgoing messages
+      if (isOut) updateRatchet(msg);
+    }
+
+    function scrollBottom(force = false) {
+      const c = document.getElementById("messages");
+      if (force || isNearBottom()) {
+        c.scrollTop = c.scrollHeight;
+      }
+    }
+
+    // ── Send ──────────────────────────────────────────────────────
+    async function sendMessage() {
+      const input = document.getElementById("msg-input");
+      const text = input.value.trim();
+      if (!text) return;
+
+      const btn = document.getElementById("send-btn");
+      btn.disabled = true;
+      input.value = "";
+      autoResize(input);
+
+      try {
+        const r = await fetch("/api/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: text, contact_id: activeContact }),
+        });
+        const d = await r.json();
+        if (d.error) showToast("Error: " + d.error, null);
+        if (d.coins) updateCoins(d.coins);
+      } catch (e) {
+        showToast("Send failed — is the server running?", null);
+      } finally {
+        btn.disabled = false;
+        input.focus();
+      }
+    }
+
+    // ── Toast ─────────────────────────────────────────────────────
+    function showToast(msg, tier) {
+      const container = document.getElementById("toasts");
+      const toast = document.createElement("div");
+      toast.className = `toast${tier ? ` tier-${tier}` : ""}`;
+      toast.textContent = msg;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3200);
+    }
+
+    // ── Utilities ─────────────────────────────────────────────────
+    function escapeHtml(s) {
+      return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;").replace(/\n/g, "<br>");
+    }
+
+    function autoResize(el) {
+      el.style.height = "auto";
+      el.style.height = Math.min(el.scrollHeight, 120) + "px";
+    }
+
+    function isNearBottom() {
+      const c = document.getElementById("messages");
+      return c.scrollHeight - c.scrollTop - c.clientHeight < 80;
+    }
+
+    // ── Event listeners ───────────────────────────────────────────
+    document.getElementById("msg-input").addEventListener("input", function () {
+      autoResize(this);
+    });
+
+    document.getElementById("msg-input").addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // ── Poll for status every 5s as backup ───────────────────────
+    setInterval(loadStatus, 5000);
+    setInterval(() => loadHistory(activeContact, false), 8000);
+
+    // ── Init ──────────────────────────────────────────────────────
+    connectSSE();
+  </script>
+</body>
+
+</html>

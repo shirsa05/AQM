@@ -1,0 +1,41 @@
+# ── AQM — Amortized Quantum Messaging ──────────────────────────────────────
+# Python 3.12 required
+# Install with: pip install -r requirements.txt
+#
+# System dependencies (install separately):
+#   - Redis 7+        : brew install redis
+#   - PostgreSQL 16+  : brew install postgresql@16
+#   - liboqs          : brew install liboqs  (required for ML-KEM-768 / ML-DSA-65)
+
+# ── Post-Quantum Crypto ─────────────────────────────────────────────────────
+liboqs-python>=0.10.0          # ML-KEM-768 (Kyber) + ML-DSA-65 (Dilithium)
+PyNaCl>=1.5.0                  # X25519 + Ed25519 + AEAD (libsodium bindings)
+cryptography>=42.0.0           # HKDF key derivation
+
+# ── Web Framework (Flask UI) ────────────────────────────────────────────────
+flask>=3.0.0                   # Flask web UI
+flask-cors>=4.0.0              # Cross-origin support
+
+# ── Async Web Framework (Coin Server) ──────────────────────────────────────
+fastapi>=0.111.0               # Coin inventory REST API
+uvicorn>=0.29.0                # ASGI server for FastAPI
+httpx>=0.27.0                  # Async HTTP client
+websockets>=12.0               # WebSocket support
+
+# ── Database ────────────────────────────────────────────────────────────────
+asyncpg>=0.29.0                # Async PostgreSQL driver (coin server)
+psycopg>=3.1.0                 # Sync PostgreSQL driver
+sqlalchemy[asyncio]>=2.0.0    # ORM / query builder
+alembic>=1.13.0                # Database migrations
+
+# ── Redis ───────────────────────────────────────────────────────────────────
+redis>=5.0.0                   # Redis client (vault + inventory)
+hiredis>=2.3.0                 # C parser for redis-py (performance)
+
+# ── Data Validation ─────────────────────────────────────────────────────────
+pydantic>=2.7.0                # Request/response models
+
+# ── Testing ─────────────────────────────────────────────────────────────────
+pytest>=8.0.0                  # Test runner
+pytest-asyncio>=0.23.0         # Async test support
+fakeredis>=2.23.0              # In-memory Redis mock for tests
