@@ -148,7 +148,7 @@ def _context_simulator():
     """Simulate device context changing independently of message sends."""
     global _current_ctx, _current_ideal_tier, _current_tier
     while True:
-        time.sleep(8)  # context changes every 8 seconds
+        time.sleep(20)  # context changes every 8 seconds
         _current_ctx        = random_device_context()
         _current_ideal_tier = context_mgr.select_coin(_current_ctx)
         # Apply ceiling based on first contact's priority for display
