@@ -197,9 +197,9 @@ def bootstrap():
 
     n = len(KNOWN_CONTACTS)
     targets = {
-        "GOLD":   5 * n,
-        "SILVER": 6 * n,
-        "BRONZE": 5 * n,
+        "GOLD":   5,
+        "SILVER": 6,
+        "BRONZE": 5,
     }
     
     minted, minted_bundles = 0, []
