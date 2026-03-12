@@ -195,7 +195,13 @@ def bootstrap():
     """Mint coins for self, register all known contacts."""
     logger.info("Bootstrapping AQM for user: %s", USER_ID)
 
-    targets = {"GOLD": 5, "SILVER": 6, "BRONZE": 5}
+    n = len(KNOWN_CONTACTS)
+    targets = {
+        "GOLD":   5 * n,
+        "SILVER": 6 * n,
+        "BRONZE": 5 * n,
+    }
+    
     minted, minted_bundles = 0, []
 
     for tier, count in targets.items():
