@@ -2,9 +2,6 @@
 AQM Flask UI — Main application server.
 
 Bridges the Flask web interface to the AQM backend subsystems.
-Run with:
-    python flask_app/app.py --user alice
-    python flask_app/app.py --user bob --port 5001
 """
 
 import random
@@ -83,6 +80,8 @@ CONTACT_PORTS: dict[str, int] = _port_map
 PARTNER_ID   = KNOWN_CONTACTS[0]
 PARTNER_PORT = CONTACT_PORTS[PARTNER_ID]
 
+_DEFAULT_TIER     = "BRONZE"
+_DEFAULT_PRIORITY = "STRANGER"
 
 
 # ── Flask app ────────────────────────────────────────────────────────────────
@@ -155,7 +154,7 @@ def _context_simulator():
         # (ceiling is per-contact but context is device-wide)
         try:
             contact  = contacts_db.get_contact(PARTNER_ID)
-            priority = contact.priority if contact else DEFAULT_PRIORITY
+            priority = contact.priority if contact else _DEFAULT_PRIORITY
             ceiling  = TIER_CEILING.get(priority, _DEFAULT_TIER)
             _current_tier = _current_ideal_tier if TIER_RANK.get(_current_ideal_tier, 0) <= TIER_RANK.get(ceiling, 0) else ceiling
         except Exception:
