@@ -65,16 +65,8 @@ redis-cli ping   # should return PONG
 ### Step 1 — Reset all state (fresh demo)
 
 ```bash
-# Flush Redis
-redis-cli FLUSHALL
-
-# Delete SQLite databases
-rm -f ~/.aqm/alice_contacts.db
-rm -f ~/.aqm/bob_contacts.db
-rm -f ~/.aqm/charlie_contacts.db
-
-# Delete session ratchet databases (run from project root)
-rm -f alice_sessions.db bob_sessions.db charlie_sessions.db
+# Start Docker
+docker compose up -d
 ```
 
 ### Step 2 — Start the Coin Server (PostgreSQL backend)
@@ -82,8 +74,7 @@ rm -f alice_sessions.db bob_sessions.db charlie_sessions.db
 ```bash
 # Terminal 1 — from project root
 conda activate aqm-db
-cd AQM_Database
-uvicorn aqm_server.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn AQM_Database.aqm_server.api:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 ### Step 3 — Start Flask instances (one per terminal)
