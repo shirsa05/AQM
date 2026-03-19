@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AQM — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;600&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg-void: #efeae2;
+      --bg-panel: #ffffff;
+      --border: #e1e4e8;
+      --text-primary: #111b21;
+      --text-dim: #667781;
+      --accent-teal: #25d366;
+      --accent-blue: #128c7e;
+      --danger: #ff4444;
+      --font-mono: "JetBrains Mono", "Share Tech Mono", monospace;
+      --font-ui: "Rajdhani", sans-serif;
+      --radius: 4px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-ui);
+      background: var(--bg-void);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: var(--text-primary);
+    }
+
+    .login-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 40px 36px;
+      width: 360px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .login-logo {
+      font-family: var(--font-mono);
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      color: var(--accent-blue);
+    }
+
+    .login-subtitle {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 1.5px;
+      margin-top: 6px;
+    }
+
+    .login-user {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: 24px;
+      padding: 8px;
+      background: #f0f2f5;
+      border-radius: var(--radius);
+      letter-spacing: 2px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--text-primary);
+      background: #fafafa;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .form-group input:focus {
+      border-color: var(--accent-blue);
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--accent-blue);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .login-btn:hover {
+      background: var(--accent-teal);
+    }
+
+    .error-msg {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--danger);
+      text-align: center;
+      margin-bottom: 16px;
+      padding: 8px;
+      background: rgba(255, 68, 68, 0.06);
+      border-radius: var(--radius);
+      display: {% if error %}block{% else %}none{% endif %};
+    }
+  </style>
+</head>
+
+<body>
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-logo">AQM</div>
+      <div class="login-subtitle">AMORTIZED QUANTUM MESSAGING</div>
+    </div>
+    <div class="login-user">{{ user_id | upper }}</div>
+    <form method="POST" action="/login">
+      <div class="error-msg" id="error-msg">{{ error or '' }}</div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" autofocus required
+          placeholder="Enter password" />
+      </div>
+      <button type="submit" class="login-btn">AUTHENTICATE</button>
+    </form>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,48 @@
+# Python
+__init__.py
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+*.egg
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Session databases (created at runtime)
+*_sessions.db
+
+# Claude Code
+.claude/
+
+# C++ build artifacts
+codes/build/
+codes/bin/
+
+*.md
+codes/
+demo.py
+deploy.py
+*.yml
+Dockerfile
