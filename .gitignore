@@ -46,3 +46,5 @@ demo.py
 deploy.py
 *.yml
 Dockerfile
+*.env
+.env.example
